@@ -1,0 +1,188 @@
+<?php
+session_start();
+?>
+
+<?php require_once("includes/connection.php"); ?>
+<?php include("includes/header.php"); ?>
+
+<?php
+
+if(isset($_SESSION["session_username"])){
+// echo "Session is set"; // for testing purposes
+header("Location: intropage.php");
+}
+
+if(isset($_POST["login"])){
+
+if(!empty($_POST[â€˜usernameâ€™]) && !empty($_POST[â€˜passwordâ€™])) {
+$username=$_POST[â€˜usernameâ€™];
+$password=$_POST[â€˜passwordâ€™];
+
+$query =mysql_query("SELECT * FROM usertbl WHERE username=â€™".$username."â€™ AND password=â€™".$password."â€™");
+
+$numrows=mysql_num_rows($query);
+if($numrows!=0)
+
+{
+while($row=mysql_fetch_assoc($query))
+{
+$dbusername=$row[â€˜usernameâ€™];
+$dbpassword=$row[â€˜passwordâ€™];
+}
+
+if($username == $dbusername && $password == $dbpassword)
+
+{
+
+$_SESSION[â€˜session_usernameâ€™]=$username;
+
+/* Redirect browser */
+header("Location: intropage.php");
+}
+} else {
+
+$message = "Nombre de usuario Ã³ contraseÃ±a invalida!";
+}
+
+} else {
+$message = "Todos los campos son requeridos!";
+}
+}
+?>
+
+<div class="container mlogin">
+<div id="login">
+<h1>Aplicacion web</h1>
+<form name="loginform" id="loginform" action="" method="POST">
+<p>
+<label for="user_login">Nombre De Usuario<br />
+<input type="text" name="username" id="username" class="input" value="" size="20" /></label>
+</p>
+<p>
+<label for="user_pass">ContraseÃ±a<br />
+<input type="password" name="password" id="password" class="input" value="" size="20" /></label>
+</p>
+<p class="submit">
+<input type="submit" name="login" class="button" value="Entrar" />
+</p>
+<p class="regtext">No estas registrado? <a href="register.php" >Registrate AquÃ­</a>!</p>
+</form>
+
+</div>
+
+</div>
+
+<?php include("includes/footer.php"); ?>
+
+<?php if (!empty($message)) {echo "<p class=\"error\">" . "MESSAGE: ". $message . "</p>";} ?>
+
+[/php]
+
+A continuaciÃ³n, creamos el archivo register.php. Copie y pegue el siguiente cÃ³digo:
+
+[php]
+
+<?php require_once("includes/connection.php"); ?>
+<?php include("includes/header.php"); ?>
+
+<?php
+
+if(isset($_POST["register"])){
+
+if(!empty($_POST[â€˜full_nameâ€™]) && !empty($_POST[â€™emailâ€™]) && !empty($_POST[â€˜usernameâ€™]) && !empty($_POST[â€˜passwordâ€™])) {
+$full_name=$_POST[â€˜full_nameâ€™];
+$email=$_POST[â€™emailâ€™];
+$username=$_POST[â€˜usernameâ€™];
+$password=$_POST[â€˜passwordâ€™];
+
+$query=mysql_query("SELECT * FROM usertbl WHERE username=â€™".$username."â€™");
+$numrows=mysql_num_rows($query);
+
+if($numrows==0)
+{
+$sql="INSERT INTO usertbl
+(full_name, email, username,password)
+VALUES(â€˜$full_nameâ€™,â€™$emailâ€™, â€˜$usernameâ€™, â€˜$passwordâ€™)";
+
+$result=mysql_query($sql);
+
+if($result){
+$message = "Cuenta Correctamente Creada";
+} else {
+$message = "Error al ingresar datos de la informacion!";
+}
+
+} else {
+$message = "El nombre de usuario ya existe! Por favor, intenta con otro!";
+}
+
+} else {
+$message = "Todos los campos no deben de estar vacios!";
+}
+}
+?>
+
+<?php if (!empty($message)) {echo "<p class=\"error\">" . "Mensaje: ". $message . "</p>";} ?>
+
+<div class="container mregister">
+<div id="login">
+<h1>Registrar</h1>
+<form name="registerform" id="registerform" action="register.php" method="post">
+<p>
+<label for="user_login">Nombre Completo<br />
+<input type="text" name="full_name" id="full_name" class="input" size="32" value="" /></label>
+</p>
+
+<p>
+<label for="user_pass">E-mail<br />
+<input type="email" name="email" id="email" class="input" value="" size="32" /></label>
+</p>
+
+<p>
+<label for="user_pass">Nombre De Usuario<br />
+<input type="text" name="username" id="username" class="input" value="" size="20" /></label>
+</p>
+
+<p>
+<label for="user_pass">ContraseÃ±a<br />
+<input type="password" name="password" id="password" class="input" value="" size="32" /></label>
+</p>
+
+<p class="submit">
+<input type="submit" name="register" id="register" class="button" value="Registrar" />
+</p>
+
+<p class="regtext">Ya tienes una cuenta? <a href="login.php" >Entra AquÃ­!</a>!</p>
+</form>
+
+</div>
+</div>
+
+<?php include("includes/footer.php"); ?>
+
+[/php]
+
+A continuaciÃ³n, se crea la pagina de bienvenida en el archivo intropage.php. Esto servirÃ¡ como la pÃ¡gina principal una vez que un usuario inicia sesiÃ³n exitosamente.
+
+[php]
+
+<?php
+session_start();
+if(!isset($_SESSION["session_username"])) {
+header("location:login.php");
+} else {
+?>
+
+<?php include("includes/header.php"); ?>
+<div id="welcome">
+<h2>Bienvenido, <span><?php echo $_SESSION[â€˜session_usernameâ€™];?>! </span></h2>
+<p><a href="logout.php">Finalice</a> sesiÃ³n aquÃ­!</p>
+</div>
+
+<?php include("includes/footer.php"); ?>
+
+<?php
+}
+?>
+
+
